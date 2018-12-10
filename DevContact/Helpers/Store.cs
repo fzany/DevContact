@@ -1,44 +1,236 @@
 ﻿using DevContact.Models;
-using System;
+using MongoDB.Driver;
+using MongoDB.Driver.Builders;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace DevContact.Helpers
 {
     public class Store
     {
+        private static readonly DataContext context = new DataContext();
+        /// <summary>
+        /// Insert the new developer into the database.
+        /// </summary>
+        /// <param name="data"></param>
+        /// <returns></returns>
         public static DeveloperResponse Add(Developer data)
         {
-            return new DeveloperResponse() { Data = new Developer() { Email = "fzanyajibs@gmail.com" } };
+            //initialize response
+            DeveloperResponse response = new DeveloperResponse();
+            //Check for existence of unique identifiers (email and phone)
+            if (CheckEmailExistence(data.Email))
+            {
+                response.Status = false;
+                response.Message = Constants.Email_Exists;
+                return response;
+            }
+            if (CheckPhoneExistence(data.Phone_Number))
+            {
+                response.Status = false;
+                response.Message = Constants.Phone_Exists;
+                return response;
+            }
+
+            //insert the data into the database
+            context.Developer.Insert(data);
+
+            //prepare response data
+            response.Status = true;
+            response.Message = Constants.Success;
+
+            //return the newly inserted data from the database.
+            response.Data = FetchByEmail(data.Email);
+            return response;
+        }
+        /// <summary>
+        /// Fetch a Developer by email.
+        /// </summary>
+        /// <param name="email"></param>
+        /// <returns></returns>
+        public static Developer FetchByEmail(string email)
+        {
+            MongoDB.Driver.IMongoQuery query = Query<Developer>.EQ(e => e.Email, email);
+            return context.Developer.FindOne(query);
         }
 
+        /// <summary>
+        /// Check the existence of a Developer via the email property.
+        /// </summary>
+        /// <param name="email"></param>
+        /// <returns></returns>
+        public static bool CheckEmailExistence(string email)
+        {
+            MongoDB.Driver.IMongoQuery query = Query<Developer>.EQ(e => e.Email, email);
+            MongoDB.Driver.MongoCursor<Developer> result = context.Developer.Find(query);
+            if (result == null)
+            {
+                return false;
+            }
+
+            return true;
+        }
+
+        /// <summary>
+        /// Check the existence of a developer via the phone number property.
+        /// </summary>
+        /// <param name="phone"></param>
+        /// <returns></returns>
+        public static bool CheckPhoneExistence(string phone)
+        {
+            MongoDB.Driver.IMongoQuery query = Query<Developer>.EQ(e => e.Phone_Number, phone);
+            MongoDB.Driver.MongoCursor<Developer> result = context.Developer.Find(query);
+            if (result == null)
+            {
+                return false;
+            }
+
+            return true;
+        }
+
+        /// <summary>
+        /// Update a developer via the guid.
+        /// </summary>
+        /// <param name="data"></param>
+        /// <returns></returns>
         public static DeveloperResponse Update(Developer data)
         {
-            return new DeveloperResponse() { Data = new Developer() { Email = "fzanyajibs@gmail.com" } };
+            //initialize response data.
+            DeveloperResponse response = new DeveloperResponse();
+
+            //check if the developer exists on the system via guid.
+            if (!Is_Developer_Exists(data.Guid))
+            {
+                response.Status = false;
+                response.Message = Constants.Non_Exist;
+                return response;
+            }
+
+            //Update the Contact
+            MongoDB.Driver.IMongoQuery query = Query<Developer>.EQ(d => d.Guid, data.Guid);
+            MongoDB.Driver.IMongoUpdate replacement = Update<Developer>.Replace(data);
+            context.Developer.Update(query, replacement);
+
+            //prepare response data
+            response.Status = true;
+            response.Message = Constants.Success;
+
+            //return the newly inserted data from the database.
+            response.Data = FetchByEmail(data.Email);
+            return response;
         }
 
+        /// <summary>
+        /// Fetch all developers
+        /// </summary>
+        /// <returns></returns>
         public static DeveloperResponses FetchAll()
         {
-            return new DeveloperResponses() { Data = new List<Developer>() { new Developer() { Email = "fzanyajibs@gmail.com" }, new Developer() { Email = "fzanyajibs@gmail.com" } } };
+            //prepare responses
+            DeveloperResponses responses = new DeveloperResponses();
+            MongoCursor<Developer> results = context.Developer.FindAll();
+
+            //test for null
+            if (results == null)
+            {
+                responses.Status = false;
+                responses.Message = Constants.Empty_List;
+                responses.Data = new List<Developer>() { };
+                return responses;
+            }
+            responses.Status = true;
+
+            //return data
+            responses.Data = results.ToList();
+            return responses;
         }
 
-        public static DeveloperResponse FetchById(int id)
+        /// <summary>
+        /// Fetch a developer by Guid property.
+        /// </summary>
+        /// <param name="guid"></param>
+        /// <returns></returns>
+        public static DeveloperResponse FetchById(string guid)
         {
-            return new DeveloperResponse() { Data = new Developer() { Email = "fzanyajibs@gmail.com" } };
+            //prepare response
+            DeveloperResponse developer = new DeveloperResponse();
+            //check for existence
+            if (!Is_Developer_Exists(guid))
+            {
+                developer.Status = false;
+                developer.Message = Constants.Non_Exist;
+                return developer;
+            }
+            IMongoQuery query = Query<Developer>.EQ(d => d.Guid, guid);
+            developer.Data = context.Developer.FindOne(query);
+
+            //send response
+            developer.Status = true;
+            return developer;
         }
 
-        public static DeveloperResponse Delete(int id)
+        /// <summary>
+        /// Delete a Developer via the guid Property.
+        /// </summary>
+        /// <param name="guid"></param>
+        /// <returns></returns>
+        public static GeneralResponse Delete(string guid)
         {
-            return new DeveloperResponse() { Data = new Developer() { Email = "fzanyajibs@gmail.com" } };
+            //prepare response
+            GeneralResponse response = new GeneralResponse();
+
+            //check if contact exists
+            if (!Is_Developer_Exists(guid))
+            {
+                response.Status = false;
+                response.Message = Constants.Non_Exist;
+                return response;
+            }
+
+            //proceed to delete the Developer
+            IMongoQuery query = Query<Developer>.EQ(d => d.Guid, guid);
+            context.Developer.Remove(query);
+
+            //send response
+            response.Status = true;
+            response.Message = Constants.Success;
+            return response;
         }
 
-        public static DeveloperResponses FetchByCategory(int cat)
+        /// <summary>
+        /// Fetch Developers that have a similar tech stack.
+        /// </summary>
+        /// <param name="category"></param>
+        /// <returns></returns>
+        public static DeveloperResponses FetchByCategory(int category)
         {
-            return new DeveloperResponses() { Data = new List<Developer>() { new Developer() { Email = "fzanyajibs@gmail.com" }, new Developer() { Email = "fzanyajibs@gmail.com" } } };
+            //initialize response
+            DeveloperResponses responses = new DeveloperResponses();
+            IMongoQuery query = Query<Developer>.EQ(d => (int)d.Stack, category);
+            responses.Data = context.Developer.Find(query).ToList();
+
+            //prepare response
+            responses.Status = true;
+            return responses;
         }
 
-        public static bool Is_Developer_Exists(int contact_id)
+        /// <summary>
+        /// Check if Developer exists by guid
+        /// </summary>
+        /// <param name="guid"></param>
+        /// <returns></returns>
+        public static bool Is_Developer_Exists(string guid)
         {
-            throw new NotImplementedException();
+            IMongoQuery query = Query<Developer>.EQ(d => d.Guid, guid);
+            MongoCursor<Developer> result = context.Developer.Find(query);
+
+            //check for null
+            if (result == null)
+            {
+                return false;
+            }
+
+            return true;
         }
     }
 }

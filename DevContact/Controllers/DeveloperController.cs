@@ -67,13 +67,13 @@ namespace DevContact.Controllers
         }
 
         [HttpGet]
-        [Route("developer/fetch/{id}")]
-        public ActionResult<DeveloperResponse> FetchById(int id)
+        [Route("developer/fetch/{guid}")]
+        public ActionResult<DeveloperResponse> FetchById(string guid)
         {
             DeveloperResponse developer = new DeveloperResponse();
             try
             {
-                developer = Store.FetchById(id);
+                developer = Store.FetchById(guid);
                 return developer;
             }
             catch (Exception ex)
@@ -87,12 +87,12 @@ namespace DevContact.Controllers
 
         [HttpGet]
         [Route("developer/fetch/cat/{category}")]
-        public ActionResult<DeveloperResponses> FetchByCategory(int cat)
+        public ActionResult<DeveloperResponses> FetchByCategory(int category)
         {
             DeveloperResponses developers = new DeveloperResponses();
             try
             {
-                developers = Store.FetchByCategory(cat);
+                developers = Store.FetchByCategory(category);
                 return developers;
             }
             catch (Exception ex)
@@ -105,13 +105,13 @@ namespace DevContact.Controllers
         }
 
         [HttpDelete]
-        [Route("developer/delete/{id}")]
-        public ActionResult<DeveloperResponse> Delete(int id)
+        [Route("developer/delete/{guid}")]
+        public ActionResult<GeneralResponse> Delete(string guid)
         {
-            DeveloperResponse developer = new DeveloperResponse();
+            GeneralResponse developer = new GeneralResponse();
             try
             {
-                developer = Store.Delete(id);
+                developer = Store.Delete(guid);
                 return developer;
             }
             catch (Exception ex)
