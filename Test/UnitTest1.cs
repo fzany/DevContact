@@ -15,7 +15,7 @@ namespace Test
         {
             Developer developer = new Developer
             {
-                Firstname = "Olorunfemi Ajibulu",
+                Firstname = "Olorunfemi",
                 Lastname = "Ajibulu",
                 Email = "fzanyajibs@gmail.com",
                 GitHub_Url = "https://github.com/fzany",
@@ -27,6 +27,9 @@ namespace Test
                 Years_Of_Experience = 2
             };
 
+            //insert developer
+            var result = Store.Add(developer);
+            Assert.True(result.Status);
         }
         /// <summary>
         /// Test for updating a contact.
@@ -35,9 +38,27 @@ namespace Test
         public void UpdateContact()
         {
             string contact_id = Guid.NewGuid().ToString();
-            DeveloperResponse response = Store.FetchById(contact_id);
-            Developer developer = response.Data;
 
+            //Modify Developer data.
+            Developer developer = new Developer
+            {
+                Guid = contact_id,
+                Firstname = "Adeniyi",
+                Lastname = "Ajibulu",
+                Email = "fzanyajibs@gmail.com",
+                GitHub_Url = "https://github.com/fzany",
+                LinkedIn_Url = "https://www.linkedin.com/in/fzany",
+                Phone_Number = "07034337562",
+                Stack = Stack.Fullstack,
+                Platform = Platform.Mobile,
+                Stackoverflow_Url = "https://stackoverflow.com/users/2768516/olorunfemi-ajibulu",
+                Years_Of_Experience = 2
+            };
+
+            //send for update
+            DeveloperResponse result = Store.Update(developer);
+
+            Assert.True(result.Status);
         }
         /// <summary>
         /// Test for deleting a contact.
