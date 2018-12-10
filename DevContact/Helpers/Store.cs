@@ -62,7 +62,7 @@ namespace DevContact.Helpers
         /// <returns></returns>
         public static Developer FetchOne(Expression<Func<Developer, string>> expression, string value)
         {
-            IMongoQuery query = Query<Developer>.EQ(expression, value);
+            IMongoQuery query = Query<Developer>.EQ(expression, value.ToLower());
             return context.Developer.FindOne(query);
         }
 
@@ -74,7 +74,7 @@ namespace DevContact.Helpers
         /// <returns></returns>
         public static bool CheckExistence(Expression<Func<Developer, string>> expression, string value)
         {
-            IMongoQuery query = Query<Developer>.EQ(expression, value);
+            IMongoQuery query = Query<Developer>.EQ(expression, value.ToLower());
             Developer result = context.Developer.FindOne(query);
             if (result == null)
             {

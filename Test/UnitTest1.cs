@@ -24,7 +24,8 @@ namespace Test
                 Stack = Stack.Fullstack,
                 Platform = Platform.Mobile,
                 Stackoverflow_Url = "https://stackoverflow.com/users/2768516/olorunfemi-ajibulu",
-                Years_Of_Experience = 2
+                Years_Of_Experience = 2,
+                Sex = Sex.Male
             };
 
             //insert developer
@@ -52,7 +53,8 @@ namespace Test
                 Stack = Stack.Fullstack,
                 Platform = Platform.Mobile,
                 Stackoverflow_Url = "https://stackoverflow.com/users/2768516/olorunfemi-ajibulu",
-                Years_Of_Experience = 2
+                Years_Of_Experience = 2,
+                Sex = Sex.Male
             };
 
             //send for update

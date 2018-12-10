@@ -22,6 +22,7 @@ namespace DevContact.Models
         public string Stackoverflow_Url { get; set; } = string.Empty;
         public Stack Stack { get; set; }
         public Platform Platform { get; set; }
+        public Sex Sex { get; set; }
         public string LinkedIn_Url { get; set; } = string.Empty;
         public int Years_Of_Experience { get; set; }
         

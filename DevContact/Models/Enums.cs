@@ -18,4 +18,9 @@ namespace DevContact.Models
     {
         Mobile, Web, Desktop, Cloud
     }
+
+    public enum Sex
+    {
+        Male, Female
+    }
 }
