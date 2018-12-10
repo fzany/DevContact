@@ -50,17 +50,19 @@ namespace DevContact.Helpers
             response.Message = Constants.Success;
 
             //return the newly inserted data from the database.
-            response.Data = FetchByEmail(data.Email);
+            response.Data = FetchOne(d=>d.Email, data.Email);
             return response;
         }
+
         /// <summary>
-        /// Fetch a Developer by email.
+        /// Fetch a Developer by an Expression
         /// </summary>
-        /// <param name="email"></param>
+        /// <param name="expression"></param>
+        /// <param name="value"></param>
         /// <returns></returns>
-        public static Developer FetchByEmail(string email)
+        public static Developer FetchOne(Expression<Func<Developer, string>> expression, string value)
         {
-            IMongoQuery query = Query<Developer>.EQ(e => e.Email, email);
+            IMongoQuery query = Query<Developer>.EQ(expression, value);
             return context.Developer.FindOne(query);
         }
 
@@ -126,7 +128,7 @@ namespace DevContact.Helpers
             response.Message = Constants.Success;
 
             //return the newly inserted data from the database.
-            response.Data = FetchByEmail(data.Email);
+            response.Data = FetchOne(d => d.Email, data.Email);
             return response;
         }
 
@@ -147,9 +149,7 @@ namespace DevContact.Helpers
                 response.Message = Constants.Non_Exist;
                 return response;
             }
-
-            IMongoQuery query = Query<Developer>.EQ(d => d.Email, email);
-            response.Data = context.Developer.FindOne(query);
+            response.Data = FetchOne(d => d.Email, email); 
 
             //prepare response
             response.Status = true;
@@ -197,8 +197,7 @@ namespace DevContact.Helpers
                 response.Message = Constants.Non_Exist;
                 return response;
             }
-            IMongoQuery query = Query<Developer>.EQ(d => d.Guid, guid);
-            response.Data = context.Developer.FindOne(query);
+            response.Data = FetchOne(d => d.Guid, guid);
 
             //send response
             response.Status = true;

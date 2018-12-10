@@ -112,7 +112,7 @@ namespace Test
         public void FetchContactByEmail()
         {
             string email = "fzanyajibs@gmail.com";
-            Developer developer = Store.FetchByEmail(email);
+            Developer developer = Store.FetchOne(d=>d.Email, email);
             Assert.NotNull(developer);
         }
     }
