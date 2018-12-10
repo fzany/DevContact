@@ -6,21 +6,17 @@ using System.Threading.Tasks;
 namespace DevContact.Models
 {
     /// <summary>
-    /// Class for sending a single contack to the request.
+    /// Class for sending a single contact to the request.
     /// </summary>
-    public class DeveloperResponse
+    public class DeveloperResponse : GeneralResponse
     {
-        public string Message { get; set; } = string.Empty;
-        public bool Status { get; set; }
         public Developer Data { get; set; }
     }
     /// <summary>
     /// Class for sending a collection of contacts to the request.
     /// </summary>
-    public class DeveloperResponses
+    public class DeveloperResponses : GeneralResponse
     {
-        public string Message { get; set; } = string.Empty;
-        public bool Status { get; set; }
         public List<Developer> Data { get; set; }
     }
 
