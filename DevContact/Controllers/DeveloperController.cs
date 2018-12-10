@@ -104,6 +104,25 @@ namespace DevContact.Controllers
             }
         }
 
+        [HttpGet]
+        [Route("developer/fetch/email/{email}")]
+        public ActionResult<DeveloperResponse> FetchByEmail(string email)
+        {
+            DeveloperResponse developer = new DeveloperResponse();
+            try
+            {
+                developer = Store.FetchByEmail_Address(email);
+                return developer;
+            }
+            catch (Exception ex)
+            {
+                Log.LogError(ex);
+                developer.Message = Constants.Error;
+                developer.Status = false;
+                return developer;
+            }
+        }
+
         [HttpDelete]
         [Route("developer/delete/{guid}")]
         public ActionResult<GeneralResponse> Delete(string guid)

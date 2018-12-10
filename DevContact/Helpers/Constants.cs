@@ -13,5 +13,7 @@ namespace DevContact.Helpers
         public const string Success = "Success";
         public const string Non_Exist = "Account does not exist.";
         public const string Empty_List = "Empty List";
+        public const string Provide_Guid = "Provide Guid";
+
     }
 }

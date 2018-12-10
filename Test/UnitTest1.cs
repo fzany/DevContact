@@ -28,7 +28,7 @@ namespace Test
             };
 
             //insert developer
-            var result = Store.Add(developer);
+            DeveloperResponse result = Store.Add(developer);
             Assert.True(result.Status);
         }
         /// <summary>
@@ -92,6 +92,28 @@ namespace Test
         {
             DeveloperResponses contacts = Store.FetchAll();
             Assert.NotEmpty(contacts.Data);
+        }
+
+        /// <summary>
+        /// Test for fetching contacts by category stack
+        /// </summary>
+        [Fact]
+        public void FetchContactsByCategory()
+        {
+            int category = (int)Stack.Backend;
+            DeveloperResponses contacts = Store.FetchByCategory(category);
+            Assert.NotEmpty(contacts.Data);
+        }
+
+        /// <summary>
+        /// Test for fetching developers by email
+        /// </summary>
+        [Fact]
+        public void FetchContactByEmail()
+        {
+            string email = "fzanyajibs@gmail.com";
+            Developer developer = Store.FetchByEmail(email);
+            Assert.NotNull(developer);
         }
     }
 }

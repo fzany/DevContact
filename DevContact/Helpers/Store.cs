@@ -1,6 +1,7 @@
 ﻿using DevContact.Models;
 using MongoDB.Driver;
 using MongoDB.Driver.Builders;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -50,7 +51,7 @@ namespace DevContact.Helpers
         /// <returns></returns>
         public static Developer FetchByEmail(string email)
         {
-            MongoDB.Driver.IMongoQuery query = Query<Developer>.EQ(e => e.Email, email);
+            IMongoQuery query = Query<Developer>.EQ(e => e.Email, email);
             return context.Developer.FindOne(query);
         }
 
@@ -61,8 +62,8 @@ namespace DevContact.Helpers
         /// <returns></returns>
         public static bool CheckEmailExistence(string email)
         {
-            MongoDB.Driver.IMongoQuery query = Query<Developer>.EQ(e => e.Email, email);
-            MongoDB.Driver.MongoCursor<Developer> result = context.Developer.Find(query);
+            IMongoQuery query = Query<Developer>.EQ(e => e.Email, email);
+            Developer result = context.Developer.FindOne(query);
             if (result == null)
             {
                 return false;
@@ -78,8 +79,8 @@ namespace DevContact.Helpers
         /// <returns></returns>
         public static bool CheckPhoneExistence(string phone)
         {
-            MongoDB.Driver.IMongoQuery query = Query<Developer>.EQ(e => e.Phone_Number, phone);
-            MongoDB.Driver.MongoCursor<Developer> result = context.Developer.Find(query);
+            IMongoQuery query = Query<Developer>.EQ(e => e.Phone_Number, phone);
+            Developer result = context.Developer.FindOne(query);
             if (result == null)
             {
                 return false;
@@ -97,6 +98,14 @@ namespace DevContact.Helpers
         {
             //initialize response data.
             DeveloperResponse response = new DeveloperResponse();
+
+            //check if a guid is included in the data
+            if (string.IsNullOrWhiteSpace(data.Guid))
+            {
+                response.Status = false;
+                response.Message = Constants.Provide_Guid;
+                return response;
+            }
 
             //check if the developer exists on the system via guid.
             if (!Is_Developer_Exists(data.Guid))
@@ -120,6 +129,27 @@ namespace DevContact.Helpers
             return response;
         }
 
+        internal static DeveloperResponse FetchByEmail_Address(string email)
+        {
+            //initialize response
+            DeveloperResponse response = new DeveloperResponse();
+
+            //Check for existence of unique identifiers (email and phone)
+            if (!CheckEmailExistence(email))
+            {
+                response.Status = false;
+                response.Message = Constants.Non_Exist;
+                return response;
+            }
+
+            IMongoQuery query = Query<Developer>.EQ(d => d.Email, email);
+            response.Data = context.Developer.FindOne(query);
+
+            //prepare response
+            response.Status = true;
+            return response;
+        }
+
         /// <summary>
         /// Fetch all developers
         /// </summary>
@@ -130,10 +160,10 @@ namespace DevContact.Helpers
             DeveloperResponses responses = new DeveloperResponses();
             MongoCursor<Developer> results = context.Developer.FindAll();
 
-            //test for null
-            if (results == null)
+            //test for emptiness
+            if (results.Count() == 0)
             {
-                responses.Status = false;
+                responses.Status = true;
                 responses.Message = Constants.Empty_List;
                 responses.Data = new List<Developer>() { };
                 return responses;
@@ -222,7 +252,7 @@ namespace DevContact.Helpers
         public static bool Is_Developer_Exists(string guid)
         {
             IMongoQuery query = Query<Developer>.EQ(d => d.Guid, guid);
-            MongoCursor<Developer> result = context.Developer.Find(query);
+            Developer result = context.Developer.FindOne(query);
 
             //check for null
             if (result == null)
