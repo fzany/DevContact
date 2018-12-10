@@ -8,7 +8,7 @@ BackEnd Test DevCenter Version 1 is an API for developers contact directory.
 
 ### Building and Compilation
 
-This Library require .Net ASP Core 2.0 (or above) SDK and Visual Studio or Visual Studio Code.
+This project require .Net ASP Core 2.0 (or above) SDK and Visual Studio or Visual Studio Code.
 Restore Nuget packages and build.
 Replace  the port number with the IIS generated port. "https://localhost:<port_number>/developer/[controller]"
 

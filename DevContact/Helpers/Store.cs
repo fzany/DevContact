@@ -4,6 +4,7 @@ using MongoDB.Driver.Builders;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 
 namespace DevContact.Helpers
 {
@@ -19,14 +20,22 @@ namespace DevContact.Helpers
         {
             //initialize response
             DeveloperResponse response = new DeveloperResponse();
+
+            //check if email is present
+            if (string.IsNullOrWhiteSpace(data.Email))
+            {
+                response.Status = false;
+                response.Message = Constants.Provide_Email;
+                return response;
+            }
             //Check for existence of unique identifiers (email and phone)
-            if (CheckEmailExistence(data.Email))
+            if (CheckExistence(e => e.Email, data.Email))
             {
                 response.Status = false;
                 response.Message = Constants.Email_Exists;
                 return response;
             }
-            if (CheckPhoneExistence(data.Phone_Number))
+            if (CheckExistence(e => e.Phone_Number, data.Phone_Number))
             {
                 response.Status = false;
                 response.Message = Constants.Phone_Exists;
@@ -56,36 +65,19 @@ namespace DevContact.Helpers
         }
 
         /// <summary>
-        /// Check the existence of a Developer via the email property.
+        /// Check existence of an expression from the database
         /// </summary>
-        /// <param name="email"></param>
+        /// <param name="expression"></param>
+        /// <param name="value"></param>
         /// <returns></returns>
-        public static bool CheckEmailExistence(string email)
+        public static bool CheckExistence(Expression<Func<Developer, string>> expression, string value)
         {
-            IMongoQuery query = Query<Developer>.EQ(e => e.Email, email);
+            IMongoQuery query = Query<Developer>.EQ(expression, value);
             Developer result = context.Developer.FindOne(query);
             if (result == null)
             {
                 return false;
             }
-
-            return true;
-        }
-
-        /// <summary>
-        /// Check the existence of a developer via the phone number property.
-        /// </summary>
-        /// <param name="phone"></param>
-        /// <returns></returns>
-        public static bool CheckPhoneExistence(string phone)
-        {
-            IMongoQuery query = Query<Developer>.EQ(e => e.Phone_Number, phone);
-            Developer result = context.Developer.FindOne(query);
-            if (result == null)
-            {
-                return false;
-            }
-
             return true;
         }
 
@@ -99,6 +91,14 @@ namespace DevContact.Helpers
             //initialize response data.
             DeveloperResponse response = new DeveloperResponse();
 
+            //check if email is present
+            if (string.IsNullOrWhiteSpace(data.Email))
+            {
+                response.Status = false;
+                response.Message = Constants.Provide_Email;
+                return response;
+            }
+
             //check if a guid is included in the data
             if (string.IsNullOrWhiteSpace(data.Guid))
             {
@@ -108,7 +108,8 @@ namespace DevContact.Helpers
             }
 
             //check if the developer exists on the system via guid.
-            if (!Is_Developer_Exists(data.Guid))
+
+            if (!CheckExistence(e => e.Guid, data.Guid))
             {
                 response.Status = false;
                 response.Message = Constants.Non_Exist;
@@ -129,13 +130,18 @@ namespace DevContact.Helpers
             return response;
         }
 
+        /// <summary>
+        /// Fetch a contact by email address
+        /// </summary>
+        /// <param name="email"></param>
+        /// <returns></returns>
         internal static DeveloperResponse FetchByEmail_Address(string email)
         {
             //initialize response
             DeveloperResponse response = new DeveloperResponse();
 
             //Check for existence of unique identifiers (email and phone)
-            if (!CheckEmailExistence(email))
+            if (!CheckExistence(e => e.Email, email))
             {
                 response.Status = false;
                 response.Message = Constants.Non_Exist;
@@ -183,20 +189,20 @@ namespace DevContact.Helpers
         public static DeveloperResponse FetchById(string guid)
         {
             //prepare response
-            DeveloperResponse developer = new DeveloperResponse();
+            DeveloperResponse response = new DeveloperResponse();
             //check for existence
-            if (!Is_Developer_Exists(guid))
+            if (!CheckExistence(e => e.Guid, guid))
             {
-                developer.Status = false;
-                developer.Message = Constants.Non_Exist;
-                return developer;
+                response.Status = false;
+                response.Message = Constants.Non_Exist;
+                return response;
             }
             IMongoQuery query = Query<Developer>.EQ(d => d.Guid, guid);
-            developer.Data = context.Developer.FindOne(query);
+            response.Data = context.Developer.FindOne(query);
 
             //send response
-            developer.Status = true;
-            return developer;
+            response.Status = true;
+            return response;
         }
 
         /// <summary>
@@ -210,7 +216,7 @@ namespace DevContact.Helpers
             GeneralResponse response = new GeneralResponse();
 
             //check if contact exists
-            if (!Is_Developer_Exists(guid))
+            if (!CheckExistence(e => e.Guid, guid))
             {
                 response.Status = false;
                 response.Message = Constants.Non_Exist;
@@ -242,25 +248,6 @@ namespace DevContact.Helpers
             //prepare response
             responses.Status = true;
             return responses;
-        }
-
-        /// <summary>
-        /// Check if Developer exists by guid
-        /// </summary>
-        /// <param name="guid"></param>
-        /// <returns></returns>
-        public static bool Is_Developer_Exists(string guid)
-        {
-            IMongoQuery query = Query<Developer>.EQ(d => d.Guid, guid);
-            Developer result = context.Developer.FindOne(query);
-
-            //check for null
-            if (result == null)
-            {
-                return false;
-            }
-
-            return true;
         }
     }
 }

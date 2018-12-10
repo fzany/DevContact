@@ -67,7 +67,7 @@ namespace Test
         public void DeleteContact()
         {
             string contact_id = Guid.NewGuid().ToString();
-            bool is_Exists = Store.Is_Developer_Exists(contact_id);
+            bool is_Exists = Store.CheckExistence(d=>d.Guid, contact_id);
             Assert.True(is_Exists);
             Store.Delete(contact_id);
             Assert.True(is_Exists);
