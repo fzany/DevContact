@@ -7,7 +7,8 @@ namespace DevContact.Models
 {
     public class Developer
     {
-        public string Id { get; set; }
+        public string Guid { get; set; }
+        public int Id { get; set; }
         public string Firstname { get; set; } = string.Empty;
         public string Lastname { get; set; } = string.Empty;
         public string Phone_Number { get; set; } = string.Empty;

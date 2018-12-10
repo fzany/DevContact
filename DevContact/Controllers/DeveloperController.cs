@@ -10,7 +10,7 @@ namespace DevContact.Controllers
     public class DeveloperController : ControllerBase
     {
         [HttpPost]
-        [Route("Developer/Add")]
+        [Route("developer/add")]
         public DeveloperResponse Add([FromBody]Developer data)
         {
             DeveloperResponse developer = new DeveloperResponse();
@@ -29,7 +29,7 @@ namespace DevContact.Controllers
         }
 
         [HttpPut]
-        [Route("Developer/Update")]
+        [Route("developer/update")]
         public DeveloperResponse Update([FromBody]Developer data)
         {
             DeveloperResponse developer = new DeveloperResponse();
@@ -48,7 +48,7 @@ namespace DevContact.Controllers
         }
 
         [HttpGet]
-        [Route("Developer/Fetch")]
+        [Route("developer/fetch")]
         public DeveloperResponses FetchAll()
         {
             DeveloperResponses developers = new DeveloperResponses();
@@ -67,7 +67,7 @@ namespace DevContact.Controllers
         }
 
         [HttpGet]
-        [Route("Developer/Fetch/{id}")]
+        [Route("developer/fetch/{id}")]
         public ActionResult<DeveloperResponse> FetchById(int id)
         {
             DeveloperResponse developer = new DeveloperResponse();
@@ -85,8 +85,27 @@ namespace DevContact.Controllers
             }
         }
 
+        [HttpGet]
+        [Route("developer/fetch/cat/{category}")]
+        public ActionResult<DeveloperResponses> FetchByCategory(int cat)
+        {
+            DeveloperResponses developers = new DeveloperResponses();
+            try
+            {
+                developers = Store.FetchByCategory(cat);
+                return developers;
+            }
+            catch (Exception ex)
+            {
+                Log.LogError(ex);
+                developers.Message = Constants.Error;
+                developers.Status = false;
+                return developers;
+            }
+        }
+
         [HttpDelete]
-        [Route("Developer/Delete/{id}")]
+        [Route("developer/delete/{id}")]
         public ActionResult<DeveloperResponse> Delete(int id)
         {
             DeveloperResponse developer = new DeveloperResponse();

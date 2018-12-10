@@ -1,34 +1,42 @@
-﻿using System;
+﻿using DevContact.Models;
+using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using DevContact.Models;
 
 namespace DevContact.Helpers
 {
     public class Store
     {
-        internal static DeveloperResponse Add(Developer data)
+        public static DeveloperResponse Add(Developer data)
         {
-            throw new NotImplementedException();
+            return new DeveloperResponse() { Data = new Developer() { Email = "fzanyajibs@gmail.com" } };
         }
 
-        internal static DeveloperResponse Update(Developer data)
+        public static DeveloperResponse Update(Developer data)
         {
-            throw new NotImplementedException();
+            return new DeveloperResponse() { Data = new Developer() { Email = "fzanyajibs@gmail.com" } };
         }
 
-        internal static DeveloperResponses FetchAll()
+        public static DeveloperResponses FetchAll()
         {
-            throw new NotImplementedException();
+            return new DeveloperResponses() { Data = new List<Developer>() { new Developer() { Email = "fzanyajibs@gmail.com" }, new Developer() { Email = "fzanyajibs@gmail.com" } } };
         }
 
-        internal static DeveloperResponse FetchById(int id)
+        public static DeveloperResponse FetchById(int id)
         {
-            throw new NotImplementedException();
+            return new DeveloperResponse() { Data = new Developer() { Email = "fzanyajibs@gmail.com" } };
         }
 
-        internal static DeveloperResponse Delete(int id)
+        public static DeveloperResponse Delete(int id)
+        {
+            return new DeveloperResponse() { Data = new Developer() { Email = "fzanyajibs@gmail.com" } };
+        }
+
+        public static DeveloperResponses FetchByCategory(int cat)
+        {
+            return new DeveloperResponses() { Data = new List<Developer>() { new Developer() { Email = "fzanyajibs@gmail.com" }, new Developer() { Email = "fzanyajibs@gmail.com" } } };
+        }
+
+        public static bool Is_Developer_Exists(int contact_id)
         {
             throw new NotImplementedException();
         }
