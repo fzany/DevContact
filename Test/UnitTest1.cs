@@ -1,6 +1,7 @@
 using DevContact.Helpers;
 using DevContact.Models;
 using System;
+using Test.Helpers;
 using Xunit;
 
 namespace Test
@@ -29,7 +30,7 @@ namespace Test
             };
 
             //insert developer
-            DeveloperResponse result = Store.Add(developer);
+            DeveloperResponse result = TestStore.Add(developer);
             Assert.True(result.Status);
         }
         /// <summary>
@@ -58,7 +59,7 @@ namespace Test
             };
 
             //send for update
-            DeveloperResponse result = Store.Update(developer);
+            DeveloperResponse result = TestStore.Update(developer);
 
             Assert.True(result.Status);
         }
@@ -69,9 +70,9 @@ namespace Test
         public void DeleteContact()
         {
             string contact_id = Guid.NewGuid().ToString();
-            bool is_Exists = Store.CheckExistence(d=>d.Guid, contact_id);
+            bool is_Exists = TestStore.CheckExistence(d=>d.Guid, contact_id);
             Assert.True(is_Exists);
-            Store.Delete(contact_id);
+            TestStore.Delete(contact_id);
             Assert.True(is_Exists);
         }
 
@@ -82,7 +83,7 @@ namespace Test
         public void FetchContact()
         {
             string contact_id = Guid.NewGuid().ToString();
-            DeveloperResponse contact = Store.FetchById(contact_id);
+            DeveloperResponse contact = TestStore.FetchById(contact_id);
             Assert.NotNull(contact);
         }
 
@@ -92,7 +93,7 @@ namespace Test
         [Fact]
         public void FetchAllContacts()
         {
-            DeveloperResponses contacts = Store.FetchAll();
+            DeveloperResponses contacts = TestStore.FetchAll();
             Assert.NotEmpty(contacts.Data);
         }
 
@@ -103,7 +104,7 @@ namespace Test
         public void FetchContactsByCategory()
         {
             int category = (int)Stack.Backend;
-            DeveloperResponses contacts = Store.FetchByCategory(category);
+            DeveloperResponses contacts = TestStore.FetchByCategory(category);
             Assert.NotEmpty(contacts.Data);
         }
 
@@ -114,7 +115,7 @@ namespace Test
         public void FetchContactByEmail()
         {
             string email = "fzanyajibs@gmail.com";
-            Developer developer = Store.FetchOne(d=>d.Email, email);
+            Developer developer = TestStore.FetchOne(d=>d.Email, email);
             Assert.NotNull(developer);
         }
     }

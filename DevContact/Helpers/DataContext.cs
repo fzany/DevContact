@@ -20,5 +20,13 @@ namespace DevContact.Helpers
         }
 
         public MongoCollection<Developer> Developer => Database.GetCollection<Developer>(typeof(Developer).Name.ToLower());
+
+        public MongoCollection<User> User => Database.GetCollection<User>(typeof(User).Name.ToLower());
+
+        //Test Methods
+        public MongoCollection<Developer> TestDeveloper => Database.GetCollection<Developer>(typeof(Developer).Name.ToLower() + "test");
+
+        public MongoCollection<User> TestUser => Database.GetCollection<User>(typeof(User).Name.ToLower() + "test");
+
     }
 }

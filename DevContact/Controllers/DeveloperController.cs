@@ -1,5 +1,6 @@
 ﻿using DevContact.Helpers;
 using DevContact.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System;
 
@@ -8,26 +9,33 @@ namespace DevContact.Controllers
     /// <summary>
     /// API to Add contact.
     /// </summary>
+    [Authorize]
     [Produces("application/json")]
     [ApiController]
     public class DeveloperController : ControllerBase
     {
+
         [HttpPost]
         [Route("developer/add")]
-        public DeveloperResponse Add([FromBody]Developer data)
+        public ActionResult<DeveloperResponse> Add([FromBody]Developer data)
         {
             DeveloperResponse developer = new DeveloperResponse();
             try
             {
                 developer = Store.Add(data);
-                return developer;
+                if (developer.Status)
+                {
+                    return Ok(developer);
+                }
+                else
+                {
+                    return BadRequest(new { message = developer.Message });
+                }
             }
             catch (Exception ex)
             {
                 Log.LogError(ex);
-                developer.Message = Constants.Error;
-                developer.Status = false;
-                return developer;
+                return BadRequest(new { message = ex.ToString() });
             }
         }
 
@@ -38,20 +46,25 @@ namespace DevContact.Controllers
         /// <returns></returns>
         [HttpPut]
         [Route("developer/update")]
-        public DeveloperResponse Update([FromBody]Developer data)
+        public ActionResult<DeveloperResponse> Update([FromBody]Developer data)
         {
             DeveloperResponse developer = new DeveloperResponse();
             try
             {
                 developer = Store.Update(data);
-                return developer;
+                if (developer.Status)
+                {
+                    return Ok(developer);
+                }
+                else
+                {
+                    return BadRequest(new { message = developer.Message });
+                }
             }
             catch (Exception ex)
             {
                 Log.LogError(ex);
-                developer.Message = Constants.Error;
-                developer.Status = false;
-                return developer;
+                return BadRequest(new { message = ex.ToString() });
             }
         }
 
@@ -61,20 +74,25 @@ namespace DevContact.Controllers
         /// <returns></returns>
         [HttpGet]
         [Route("developer/fetch")]
-        public DeveloperResponses FetchAll()
+        public ActionResult<DeveloperResponses> FetchAll()
         {
             DeveloperResponses developers = new DeveloperResponses();
             try
             {
                 developers = Store.FetchAll();
-                return developers;
+                if (developers.Status)
+                {
+                    return Ok(developers);
+                }
+                else
+                {
+                    return BadRequest(new { message = developers.Message });
+                }
             }
             catch (Exception ex)
             {
                 Log.LogError(ex);
-                developers.Message = Constants.Error;
-                developers.Status = false;
-                return developers;
+                return BadRequest(new { message = ex.ToString() });
             }
         }
 
@@ -91,14 +109,19 @@ namespace DevContact.Controllers
             try
             {
                 developer = Store.FetchById(guid);
-                return developer;
+                if (developer.Status)
+                {
+                    return Ok(developer);
+                }
+                else
+                {
+                    return BadRequest(new { message = developer.Message });
+                }
             }
             catch (Exception ex)
             {
                 Log.LogError(ex);
-                developer.Message = Constants.Error;
-                developer.Status = false;
-                return developer;
+                return BadRequest(new { message = ex.ToString() });
             }
         }
 
@@ -115,14 +138,19 @@ namespace DevContact.Controllers
             try
             {
                 developers = Store.FetchByCategory(category);
-                return developers;
+                if (developers.Status)
+                {
+                    return Ok(developers);
+                }
+                else
+                {
+                    return BadRequest(new { message = developers.Message });
+                }
             }
             catch (Exception ex)
             {
                 Log.LogError(ex);
-                developers.Message = Constants.Error;
-                developers.Status = false;
-                return developers;
+                return BadRequest(new { message = ex.ToString() });
             }
         }
 
@@ -139,14 +167,19 @@ namespace DevContact.Controllers
             try
             {
                 developer = Store.FetchByEmail_Address(email.ToLower());
-                return developer;
+                if (developer.Status)
+                {
+                    return Ok(developer);
+                }
+                else
+                {
+                    return BadRequest(new { message = developer.Message });
+                }
             }
             catch (Exception ex)
             {
                 Log.LogError(ex);
-                developer.Message = Constants.Error;
-                developer.Status = false;
-                return developer;
+                return BadRequest(new { message = ex.ToString() });
             }
         }
 
@@ -163,14 +196,19 @@ namespace DevContact.Controllers
             try
             {
                 developer = Store.Delete(guid);
-                return developer;
+                if (developer.Status)
+                {
+                    return Ok(developer);
+                }
+                else
+                {
+                    return BadRequest(new { message = developer.Message });
+                }
             }
             catch (Exception ex)
             {
                 Log.LogError(ex);
-                developer.Message = Constants.Error;
-                developer.Status = false;
-                return developer;
+                return BadRequest(new { message = ex.ToString() });
             }
         }
     }

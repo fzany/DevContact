@@ -1,22 +1,19 @@
-﻿using DevContact.Models;
-using Microsoft.Extensions.Options;
-using Microsoft.IdentityModel.Tokens;
+﻿using DevContact.Helpers;
+using DevContact.Models;
 using MongoDB.Driver;
 using MongoDB.Driver.Builders;
 using System;
 using System.Collections.Generic;
-using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
 using System.Linq.Expressions;
-using System.Security.Claims;
 using System.Text;
 
-namespace DevContact.Helpers
+namespace Test.Helpers
 {
-    public class Store
+    public class TestStore
     {
-      
-        private static readonly DataContext context = new DataContext();
+
+        private static readonly TestDataContext context = new TestDataContext();
         /// <summary>
         /// Insert the new developer into the database.
         /// </summary>
@@ -64,12 +61,12 @@ namespace DevContact.Helpers
             response.Message = Constants.Success;
 
             //return the newly inserted data from the database.
-            response.Data = FetchOne(d=>d.Email, data.Email);
+            response.Data = FetchOne(d => d.Email, data.Email);
             return response;
         }
 
-      
-     
+
+
         /// <summary>
         /// Fetch a Developer by an Expression
         /// </summary>
@@ -82,7 +79,7 @@ namespace DevContact.Helpers
             return context.Developer.FindOne(query);
         }
 
-      
+
 
         /// <summary>
         /// Check existence of an expression from the database
@@ -101,7 +98,7 @@ namespace DevContact.Helpers
             return true;
         }
 
-      
+
 
         /// <summary>
         /// Update a developer via the guid.
@@ -169,7 +166,7 @@ namespace DevContact.Helpers
                 response.Message = Constants.Non_Exist;
                 return response;
             }
-            response.Data = FetchOne(d => d.Email, email); 
+            response.Data = FetchOne(d => d.Email, email);
 
             //prepare response
             response.Status = true;
@@ -269,4 +266,5 @@ namespace DevContact.Helpers
             return responses;
         }
     }
+
 }
