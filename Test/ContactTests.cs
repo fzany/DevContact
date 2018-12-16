@@ -1,12 +1,12 @@
-using DevContact.Helpers;
-using DevContact.Models;
+﻿using DevContact.Models;
 using System;
-using Test.Helpers;
+using System.Collections.Generic;
+using System.Text;
 using Xunit;
 
 namespace Test
 {
-    public class UnitTest1
+    public class ContactTests
     {
         /// <summary>
         /// Test for Adding a new contact.
@@ -70,7 +70,7 @@ namespace Test
         public void DeleteContact()
         {
             string contact_id = Guid.NewGuid().ToString();
-            bool is_Exists = TestStore.CheckExistence(d=>d.Guid, contact_id);
+            bool is_Exists = TestStore.CheckExistence(d => d.Guid, contact_id);
             Assert.True(is_Exists);
             TestStore.Delete(contact_id);
             Assert.True(is_Exists);
@@ -115,8 +115,9 @@ namespace Test
         public void FetchContactByEmail()
         {
             string email = "fzanyajibs@gmail.com";
-            Developer developer = TestStore.FetchOne(d=>d.Email, email);
+            Developer developer = TestStore.FetchOne(d => d.Email, email);
             Assert.NotNull(developer);
         }
     }
+
 }
