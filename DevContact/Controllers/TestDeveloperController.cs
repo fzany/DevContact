@@ -78,7 +78,7 @@ namespace DevContact.Controllers
             catch (Exception ex)
             {
                 Log.LogError(ex);
-                return BadRequest(new { message = ex.ToString() });
+                return StatusCode(500, ex.ToString());
             }
         }
 
@@ -143,7 +143,7 @@ namespace DevContact.Controllers
             catch (Exception ex)
             {
                 Log.LogError(ex);
-                return BadRequest(new { message = ex.ToString() });
+                return StatusCode(500, ex.ToString());
             }
         }
 
@@ -175,7 +175,7 @@ namespace DevContact.Controllers
             catch (Exception ex)
             {
                 Log.LogError(ex);
-                return BadRequest(new { message = ex.ToString() });
+                return StatusCode(500, ex.ToString());
             }
         }
 
@@ -206,7 +206,7 @@ namespace DevContact.Controllers
             catch (Exception ex)
             {
                 Log.LogError(ex);
-                return BadRequest(new { message = ex.ToString() });
+                return StatusCode(500, ex.ToString());
             }
         }
 
@@ -239,7 +239,7 @@ namespace DevContact.Controllers
             catch (Exception ex)
             {
                 Log.LogError(ex);
-                return BadRequest(new { message = ex.ToString() });
+                return StatusCode(500, ex.ToString());
             }
         }
 
@@ -272,7 +272,7 @@ namespace DevContact.Controllers
             catch (Exception ex)
             {
                 Log.LogError(ex);
-                return BadRequest(new { message = ex.ToString() });
+                return StatusCode(500, ex.ToString());
             }
         }
 
@@ -309,7 +309,7 @@ namespace DevContact.Controllers
             catch (Exception ex)
             {
                 Log.LogError(ex);
-                return BadRequest(new { message = ex.ToString() });
+                return StatusCode(500, ex.ToString());
             }
         }
     }
