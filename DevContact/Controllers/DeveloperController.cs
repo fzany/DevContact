@@ -163,19 +163,19 @@ namespace DevContact.Controllers
         }
 
         /// <summary>
-        /// API to fetch contacts by category
+        /// API to fetch contacts by stack
         /// </summary>
-        /// <param name="category"></param>
+        /// <param name="stack"></param>
         /// <returns></returns>
         [HttpGet]
         [Route("developer/fetch/stack/{stack}")]
-        public ActionResult<DeveloperResponses> FetchByStack(int category)
+        public ActionResult<DeveloperResponses> FetchByStack(int stack)
         {
             try
             {
                 //initialize response
                 DeveloperResponses responses = new DeveloperResponses();
-                IMongoQuery query = Query<Developer>.EQ(d => (int)d.Stack, category);
+                IMongoQuery query = Query<Developer>.EQ(d => (int)d.Stack, stack);
                 MongoCursor<Developer> listed = context.Developer.Find(query);
                 if (listed.Count() == 0)
                 {
