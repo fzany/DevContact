@@ -19,6 +19,11 @@ namespace DevContact.Controllers
     {
         private static readonly DataContext context = new DataContext();
 
+        /// <summary>
+        /// Insert the new developer into the database.
+        /// </summary>
+        /// <param name="data"></param>
+        /// <returns></returns>
         [HttpPost]
         [Route("developer/add")]
         public ActionResult<DeveloperResponse> Add([FromBody]Developer data)
@@ -26,15 +31,49 @@ namespace DevContact.Controllers
             DeveloperResponse developer = new DeveloperResponse();
             try
             {
-                developer = Store.Add(data);
-                if (developer.Status)
+
+                //initialize response
+                DeveloperResponse response = new DeveloperResponse();
+
+                //check if guid is present
+                if (!string.IsNullOrEmpty(data.Guid))
                 {
-                    return Ok(developer);
+                    return BadRequest(new { Message = Constants.Remove_Guid });
                 }
-                else
+
+                //check if email is present
+                if (string.IsNullOrWhiteSpace(data.Email))
                 {
-                    return BadRequest(new { message = developer.Message });
+                    return BadRequest(new { Message = Constants.Provide_Email });
                 }
+                data.Email = data.Email.ToLower();
+
+                //Check for email formats
+                if (!Checks.IsValidEmail(data.Email))
+                {
+                    return BadRequest(new { Message = Constants.Invalid_Email });
+                }
+                //Check for existence of unique identifiers (email and phone)
+                if (Store.CheckExistence(e => e.Email, data.Email))
+                {
+                    return BadRequest(new { Message = Constants.Email_Exists });
+                }
+
+                if (Store.CheckExistence(e => e.Phone_Number, data.Phone_Number))
+                {
+                    return BadRequest(new { Message = Constants.Phone_Exists });
+                }
+
+                //insert the data into the database
+                context.Developer.Insert(data);
+
+                //prepare response data
+                response.Status = true;
+                response.Message = Constants.Success;
+
+                //return the newly inserted data from the database.
+                response.Data = Store.FetchOne(d => d.Email, data.Email);
+                return Ok(response);
             }
             catch (Exception ex)
             {
@@ -54,14 +93,17 @@ namespace DevContact.Controllers
         {
             try
             {
-
-
                 //check if email is present
                 if (string.IsNullOrWhiteSpace(data.Email))
                 {
                     return BadRequest(new { Message = Constants.Provide_Email });
                 }
-
+                data.Email = data.Email.ToLower();
+                //Check for email formats
+                if (!Checks.IsValidEmail(data.Email))
+                {
+                    return BadRequest(new { Message = Constants.Invalid_Email });
+                }
                 //check if a guid is included in the data
                 if (string.IsNullOrWhiteSpace(data.Guid))
                 {
