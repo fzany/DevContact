@@ -6,7 +6,7 @@ using Xunit;
 
 namespace Test
 {
-    public class ContactTests
+    public class ContactTests 
     {
         /// <summary>
         /// Test for Adding a new contact.

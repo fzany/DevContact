@@ -2,7 +2,10 @@
 using DevContact.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using MongoDB.Driver;
+using MongoDB.Driver.Builders;
 using System;
+using System.Linq;
 
 namespace DevContact.Controllers
 {
@@ -14,6 +17,7 @@ namespace DevContact.Controllers
     [ApiController]
     public class DeveloperController : ControllerBase
     {
+        private static readonly DataContext context = new DataContext();
 
         [HttpPost]
         [Route("developer/add")]
@@ -48,18 +52,45 @@ namespace DevContact.Controllers
         [Route("developer/update")]
         public ActionResult<DeveloperResponse> Update([FromBody]Developer data)
         {
-            DeveloperResponse developer = new DeveloperResponse();
             try
             {
-                developer = Store.Update(data);
-                if (developer.Status)
+
+
+                //check if email is present
+                if (string.IsNullOrWhiteSpace(data.Email))
                 {
-                    return Ok(developer);
+                    return BadRequest(new { Message = Constants.Provide_Email });
                 }
-                else
+
+                //check if a guid is included in the data
+                if (string.IsNullOrWhiteSpace(data.Guid))
                 {
-                    return BadRequest(new { message = developer.Message });
+                    return BadRequest(new { Message = Constants.Provide_Guid });
                 }
+
+                //check if the developer exists on the system via guid.
+
+                if (!Store.CheckExistence(e => e.Guid, data.Guid))
+                {
+                    return NotFound(new { Message = Constants.Non_Exist });
+                }
+
+                //Update the Contact
+                MongoDB.Driver.IMongoQuery query = Query<Developer>.EQ(d => d.Guid, data.Guid);
+                MongoDB.Driver.IMongoUpdate replacement = Update<Developer>.Replace(data);
+                context.Developer.Update(query, replacement);
+
+                //initialize response data.
+                DeveloperResponse response = new DeveloperResponse
+                {
+                    //prepare response data
+                    Status = true,
+                    Message = Constants.Success,
+
+                    //return the newly inserted data from the database.
+                    Data = Store.FetchOne(d => d.Email, data.Email)
+                };
+                return Ok(response);
             }
             catch (Exception ex)
             {
@@ -76,18 +107,22 @@ namespace DevContact.Controllers
         [Route("developer/fetch")]
         public ActionResult<DeveloperResponses> FetchAll()
         {
-            DeveloperResponses developers = new DeveloperResponses();
             try
             {
-                developers = Store.FetchAll();
-                if (developers.Status)
+                //prepare responses
+                DeveloperResponses responses = new DeveloperResponses();
+                MongoCursor<Developer> results = context.Developer.FindAll();
+
+                //test for emptiness
+                if (results.Count() == 0)
                 {
-                    return Ok(developers);
+                    return NotFound(new { Message = Constants.Empty_List });
                 }
-                else
-                {
-                    return BadRequest(new { message = developers.Message });
-                }
+                responses.Status = true;
+
+                //return data
+                responses.Data = results.ToList();
+                return Ok(responses);
             }
             catch (Exception ex)
             {
@@ -105,18 +140,20 @@ namespace DevContact.Controllers
         [Route("developer/fetch/{guid}")]
         public ActionResult<DeveloperResponse> FetchById(string guid)
         {
-            DeveloperResponse developer = new DeveloperResponse();
             try
             {
-                developer = Store.FetchById(guid);
-                if (developer.Status)
+                //prepare response
+                DeveloperResponse response = new DeveloperResponse();
+                //check for existence
+                if (!Store.CheckExistence(e => e.Guid, guid))
                 {
-                    return Ok(developer);
+                    return NotFound(new { Message = Constants.Non_Exist });
                 }
-                else
-                {
-                    return BadRequest(new { message = developer.Message });
-                }
+                response.Data = Store.FetchOne(d => d.Guid, guid);
+
+                //send response
+                response.Status = true;
+                return Ok(response);
             }
             catch (Exception ex)
             {
@@ -131,21 +168,25 @@ namespace DevContact.Controllers
         /// <param name="category"></param>
         /// <returns></returns>
         [HttpGet]
-        [Route("developer/fetch/cat/{category}")]
-        public ActionResult<DeveloperResponses> FetchByCategory(int category)
+        [Route("developer/fetch/stack/{stack}")]
+        public ActionResult<DeveloperResponses> FetchByStack(int category)
         {
-            DeveloperResponses developers = new DeveloperResponses();
             try
             {
-                developers = Store.FetchByCategory(category);
-                if (developers.Status)
+                //initialize response
+                DeveloperResponses responses = new DeveloperResponses();
+                IMongoQuery query = Query<Developer>.EQ(d => (int)d.Stack, category);
+                MongoCursor<Developer> listed = context.Developer.Find(query);
+                if (listed.Count() == 0)
                 {
-                    return Ok(developers);
+                    return NotFound(new { Message = Constants.Non_Exist });
                 }
-                else
-                {
-                    return BadRequest(new { message = developers.Message });
-                }
+
+                responses.Data = listed.ToList();
+
+                //prepare response
+                responses.Status = true;
+                return Ok(responses);
             }
             catch (Exception ex)
             {
@@ -166,15 +207,19 @@ namespace DevContact.Controllers
             DeveloperResponse developer = new DeveloperResponse();
             try
             {
-                developer = Store.FetchByEmail_Address(email.ToLower());
-                if (developer.Status)
+                //initialize response
+                DeveloperResponse response = new DeveloperResponse();
+
+                //Check for existence of unique identifiers (email and phone)
+                if (!Store.CheckExistence(e => e.Email, email.ToLower()))
                 {
-                    return Ok(developer);
+                    return NotFound(new { Message = Constants.Non_Exist });
                 }
-                else
-                {
-                    return BadRequest(new { message = developer.Message });
-                }
+                response.Data = Store.FetchOne(d => d.Email, email.ToLower());
+
+                //prepare response
+                response.Status = true;
+                return Ok(response);
             }
             catch (Exception ex)
             {
@@ -195,15 +240,23 @@ namespace DevContact.Controllers
             GeneralResponse developer = new GeneralResponse();
             try
             {
-                developer = Store.Delete(guid);
-                if (developer.Status)
+                //prepare response
+                GeneralResponse response = new GeneralResponse();
+
+                //check if contact exists
+                if (!Store.CheckExistence(e => e.Guid, guid))
                 {
-                    return Ok(developer);
+                    return NotFound(new { Message = Constants.Non_Exist });
                 }
-                else
-                {
-                    return BadRequest(new { message = developer.Message });
-                }
+
+                //proceed to delete the Developer
+                IMongoQuery query = Query<Developer>.EQ(d => d.Guid, guid);
+                context.Developer.Remove(query);
+
+                //send response
+                response.Status = true;
+                response.Message = Constants.Success;
+                return Ok(response);
             }
             catch (Exception ex)
             {

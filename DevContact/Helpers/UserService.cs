@@ -16,7 +16,7 @@ namespace DevContact.Helpers
     public interface IUserService
     {
         AuthenticateResponse Authenticate(string email, string password);
-        UserResponses GetAll();
+       // UserResponses GetAll();
     }
     public class UserService : IUserService
     {
@@ -94,8 +94,7 @@ namespace DevContact.Helpers
             return response;
         }
 
-
-        public bool CheckUserExistence(Expression<Func<User, string>> expression, string value)
+        public static bool CheckUserExistence(Expression<Func<User, string>> expression, string value)
         {
             IMongoQuery query = Query<User>.EQ(expression, value.ToLower());
             User result = context.User.FindOne(query);
@@ -105,24 +104,11 @@ namespace DevContact.Helpers
             }
             return true;
         }
-        public User FetchOneUser(Expression<Func<User, string>> expression, string value)
+        public static User FetchOneUser(Expression<Func<User, string>> expression, string value)
         {
             IMongoQuery query = Query<User>.EQ(expression, value.ToLower());
             return context.User.FindOne(query);
         }
 
-        public UserResponses GetAll()
-        {
-            UserResponses responses = new UserResponses();
-            List<User> users = context.User.FindAll().ToList();
-            responses.Data = users;
-            if (users.Count() == 0)
-            {
-                responses.Message = "Empty List";
-            }
-            responses.Status = true;
-
-            return responses;
-        }
     }
 }

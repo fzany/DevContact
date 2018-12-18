@@ -21,10 +21,11 @@ namespace Test
                  Password ="pass123"
             };
             ResponseModel response = Remote.AddUser(user);
-
+            response.Response = new System.Net.Http.HttpResponseMessage(System.Net.HttpStatusCode.)
            
             //insert developer
             DeveloperResponse result = TestStore.Add(developer);
+            result.Data = 
             Assert.True(result.Status);
         }
     }
