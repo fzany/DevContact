@@ -8,37 +8,37 @@ namespace Test.Tests.Developers
 {
     public class FetchTests
     {
-        private readonly TestUserController control = new TestUserController();
+        private readonly TestDeveloperController control = new TestDeveloperController();
 
         /// <summary>
-        /// Test get all users (provided the list isn't Empty)
+        /// Test get all developers (provided the list isn't Empty)
         /// </summary>
         [Fact]
-        public void All_Users_Returns_Ok_Result()
+        public void All_Developers_Returns_Ok_Result()
         {
             // Act
-            ActionResult<UserResponses> okResult = control.TestGetAll();
+            ActionResult<DeveloperResponses> okResult = control.FetchAll();
 
             // Assert
             Assert.IsType<OkObjectResult>(okResult.Result);
 
-            UserResponses user_test = (UserResponses)((OkObjectResult)okResult.Result).Value;
+            DeveloperResponses developer_test = (DeveloperResponses)((OkObjectResult)okResult.Result).Value;
 
-            //Assert list is type <List<User>
-            Assert.IsType<List<User>>(user_test.Data);
+            //Assert list is type <List<Developer>
+            Assert.IsType<List<Developer>>(developer_test.Data);
 
             //Assert list is not empty
-            Assert.NotEmpty(user_test.Data);
+            Assert.NotEmpty(developer_test.Data);
         }
 
         /// <summary>
-        /// Test get all users (provided the list is Empty), probably after the table is cleared.
+        /// Test get all developers (provided the list is Empty), probably after the table is cleared.
         /// </summary>
         //[Fact]
-        //public void All_Users_Returns_Not_Found_Result()
+        //public void All_Developers_Returns_Not_Found_Result()
         //{
         //    // Act
-        //    ActionResult<UserResponses> not_Found_Result = control.TestGetAll();
+        //    ActionResult<DeveloperResponses> not_Found_Result = control.TestGetAll();
 
         //    // Assert
         //    Assert.IsType<NotFoundObjectResult>(not_Found_Result.Result);
@@ -49,7 +49,7 @@ namespace Test.Tests.Developers
         public void By_Unknown_Email_Returns_Not_Found_Result()
         {
             // Act
-            ActionResult<UserResponse> notFoundResult = control.GetByEmail($"admin{Guid.NewGuid().ToString().Replace("-", "").Remove(0, 20)}@admin.com");
+            ActionResult<DeveloperResponse> notFoundResult = control.FetchByEmail($"admin{Guid.NewGuid().ToString().Replace("-", "").Remove(0, 20)}@admin.com");
 
             // Assert
             Assert.IsType<NotFoundObjectResult>(notFoundResult.Result);
@@ -60,49 +60,49 @@ namespace Test.Tests.Developers
         {
 
             // Act
-            ActionResult<UserResponse> okResult = control.GetByEmail("admin@admin.com");
+            ActionResult<DeveloperResponse> okResult = control.FetchByEmail("fzanyajibs@gmail.com");
 
             // Assert the response code
             Assert.IsType<OkObjectResult>(okResult.Result);
 
-            UserResponse user_test = (UserResponse)((OkObjectResult)okResult.Result).Value;
+            DeveloperResponse developer_test = (DeveloperResponse)((OkObjectResult)okResult.Result).Value;
 
-            //Assert list is type <List<User>
-            Assert.IsType<User>(user_test.Data);
+            //Assert list is type <List<Developer>
+            Assert.IsType<Developer>(developer_test.Data);
 
-            //Assert response contains User data
-            Assert.NotNull(user_test.Data);
+            //Assert response contains Developer data
+            Assert.NotNull(developer_test.Data);
         }
 
         [Fact]
         public void By_known_Email_Returns_Ok_Result_Ensure_Right_Data()
         {
             //Arrange
-            var email = "admin@admin.com";
+            var email = "fzanyajibs@gmail.com";
 
             // Act
-            ActionResult<UserResponse> okResult = control.GetByEmail(email);
+            ActionResult<DeveloperResponse> okResult = control.FetchByEmail(email);
 
             // Assert the response code
             Assert.IsType<OkObjectResult>(okResult.Result);
 
-            UserResponse user_test = (UserResponse)((OkObjectResult)okResult.Result).Value;
+            DeveloperResponse developer_test = (DeveloperResponse)((OkObjectResult)okResult.Result).Value;
 
-            //Assert list is type User
-            Assert.IsType<User>(user_test.Data);
+            //Assert list is type Developer
+            Assert.IsType<Developer>(developer_test.Data);
 
-            //Assert response contains User data
-            Assert.NotNull(user_test.Data);
+            //Assert response contains Developer data
+            Assert.NotNull(developer_test.Data);
 
             //Assert the response has the same email as the request.
-            Assert.Equal(email, user_test.Data.Email);
+            Assert.Equal(email, developer_test.Data.Email);
         }
 
         [Fact]
         public void By_Unknown_Guid_Returns_Not_Found_Result()
         {
             // Act
-            ActionResult<UserResponse> notFoundResult = control.GetByGuid("5c18e213c48e24276808b1fc");
+            ActionResult<DeveloperResponse> notFoundResult = control.FetchById("5c18e213c48e24276808b1fc");
 
             // Assert
             Assert.IsType<NotFoundObjectResult>(notFoundResult.Result);
@@ -112,45 +112,45 @@ namespace Test.Tests.Developers
         public void By_known_Guid_Returns_Ok_Result()
         {
             //Arrange
-            var guid = "5c1907e90a539c4634ea4e48";
+            var guid = "5c1934130715c550800f22f3";
 
             // Act
-            ActionResult<UserResponse> okResult = control.GetByGuid(guid);
+            ActionResult<DeveloperResponse> okResult = control.FetchById(guid);
 
             // Assert the response code
             Assert.IsType<OkObjectResult>(okResult.Result);
 
-            UserResponse user_test = (UserResponse)((OkObjectResult)okResult.Result).Value;
+            DeveloperResponse developer_test = (DeveloperResponse)((OkObjectResult)okResult.Result).Value;
 
-            //Assert list is type User
-            Assert.IsType<User>(user_test.Data);
+            //Assert list is type Developer
+            Assert.IsType<Developer>(developer_test.Data);
 
-            //Assert response contains User data
-            Assert.NotNull(user_test.Data);
+            //Assert response contains Developer data
+            Assert.NotNull(developer_test.Data);
         }
 
         [Fact]
         public void By_known_Guid_Returns_Ok_Result_Ensure_Right_Data()
         {
             //Arrange
-            var guid = "5c1907e90a539c4634ea4e48";
+            var guid = "5c1934130715c550800f22f3";
 
             // Act
-            ActionResult<UserResponse> okResult = control.GetByGuid(guid);
+            ActionResult<DeveloperResponse> okResult = control.FetchById(guid);
 
             // Assert the response code
             Assert.IsType<OkObjectResult>(okResult.Result);
 
-            UserResponse user_test = (UserResponse)((OkObjectResult)okResult.Result).Value;
+            DeveloperResponse developer_test = (DeveloperResponse)((OkObjectResult)okResult.Result).Value;
 
-            //Assert list is type <List<User>
-            Assert.IsType<User>(user_test.Data);
+            //Assert list is type <List<Developer>
+            Assert.IsType<Developer>(developer_test.Data);
 
-            //Assert response contains User data
-            Assert.NotNull(user_test.Data);
+            //Assert response contains Developer data
+            Assert.NotNull(developer_test.Data);
 
             //Assert the response has the same guid as the request.
-            Assert.Equal(guid, user_test.Data.Guid);
+            Assert.Equal(guid, developer_test.Data.Guid);
         }
     }
 }

@@ -54,12 +54,12 @@ namespace DevContact.Controllers
                     return BadRequest(new { Message = Constants.Invalid_Email });
                 }
                 //Check for existence of unique identifiers (email and phone)
-                if (Store.CheckExistence(e => e.Email, data.Email))
+                if (Store.CheckTestExistence(e => e.Email, data.Email))
                 {
                     return BadRequest(new { Message = Constants.Email_Exists });
                 }
 
-                if (Store.CheckExistence(e => e.Phone_Number, data.Phone_Number))
+                if (Store.CheckTestExistence(e => e.Phone_Number, data.Phone_Number))
                 {
                     return BadRequest(new { Message = Constants.Phone_Exists });
                 }
@@ -72,7 +72,7 @@ namespace DevContact.Controllers
                 response.Message = Constants.Success;
 
                 //return the newly inserted data from the database.
-                response.Data = Store.FetchOne(d => d.Email, data.Email);
+                response.Data = Store.FetchTestOne(d => d.Email, data.Email);
                 return Ok(response);
             }
             catch (Exception ex)
@@ -98,6 +98,12 @@ namespace DevContact.Controllers
                 {
                     return BadRequest(new { Message = Constants.Provide_Email });
                 }
+
+                //check if email is present
+                if (string.IsNullOrWhiteSpace(data.Phone_Number))
+                {
+                    return BadRequest(new { Message = Constants.Provide_Phone });
+                }
                 data.Email = data.Email.ToLower();
                 //Check for email formats
                 if (!Checks.IsValidEmail(data.Email))
@@ -112,7 +118,7 @@ namespace DevContact.Controllers
 
                 //check if the developer exists on the system via guid.
 
-                if (!Store.CheckExistence(e => e.Guid, data.Guid))
+                if (!Store.CheckTestExistence(e => e.Guid, data.Guid))
                 {
                     return NotFound(new { Message = Constants.Non_Exist });
                 }
@@ -130,7 +136,7 @@ namespace DevContact.Controllers
                     Message = Constants.Success,
 
                     //return the newly inserted data from the database.
-                    Data = Store.FetchOne(d => d.Email, data.Email)
+                    Data = Store.FetchTestOne(d => d.Email, data.Email)
                 };
                 return Ok(response);
             }
@@ -187,11 +193,11 @@ namespace DevContact.Controllers
                 //prepare response
                 DeveloperResponse response = new DeveloperResponse();
                 //check for existence
-                if (!Store.CheckExistence(e => e.Guid, guid))
+                if (!Store.CheckTestExistence(e => e.Guid, guid))
                 {
                     return NotFound(new { Message = Constants.Non_Exist });
                 }
-                response.Data = Store.FetchOne(d => d.Guid, guid);
+                response.Data = Store.FetchTestOne(d => d.Guid, guid);
 
                 //send response
                 response.Status = true;
@@ -253,11 +259,11 @@ namespace DevContact.Controllers
                 DeveloperResponse response = new DeveloperResponse();
 
                 //Check for existence of unique identifiers (email and phone)
-                if (!Store.CheckExistence(e => e.Email, email.ToLower()))
+                if (!Store.CheckTestExistence(e => e.Email, email.ToLower()))
                 {
                     return NotFound(new { Message = Constants.Non_Exist });
                 }
-                response.Data = Store.FetchOne(d => d.Email, email.ToLower());
+                response.Data = Store.FetchTestOne(d => d.Email, email.ToLower());
 
                 //prepare response
                 response.Status = true;
@@ -286,7 +292,7 @@ namespace DevContact.Controllers
                 GeneralResponse response = new GeneralResponse();
 
                 //check if contact exists
-                if (!Store.CheckExistence(e => e.Guid, guid))
+                if (!Store.CheckTestExistence(e => e.Guid, guid))
                 {
                     return NotFound(new { Message = Constants.Non_Exist });
                 }

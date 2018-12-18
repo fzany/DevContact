@@ -98,6 +98,11 @@ namespace DevContact.Controllers
                 {
                     return BadRequest(new { Message = Constants.Provide_Email });
                 }
+                //check if email is present
+                if (string.IsNullOrWhiteSpace(data.Phone_Number))
+                {
+                    return BadRequest(new { Message = Constants.Provide_Phone });
+                }
                 data.Email = data.Email.ToLower();
                 //Check for email formats
                 if (!Checks.IsValidEmail(data.Email))

@@ -20,6 +20,7 @@ namespace DevContact.Helpers
         public const string Provide_Guid = "Provide Guid";
         public const string Provide_Password = "Provide Password";
         public const string Provide_Email = "Provide Email";
+        public const string Provide_Phone = "Provide Phone";
         public const string Remove_Guid = "Guid field must be blank.";
         public const string Invalid_Email = "Invalid Email";
 

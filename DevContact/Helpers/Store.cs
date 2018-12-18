@@ -45,9 +45,23 @@ namespace DevContact.Helpers
                 return false;
             }
             return true;
-        }    
+        }
 
+        public static Developer FetchTestOne(Expression<Func<Developer, string>> expression, string value)
+        {
+            IMongoQuery query = Query<Developer>.EQ(expression, value.ToLower());
+            return context.TestDeveloper.FindOne(query);
+        }
 
-    
+        public static bool CheckTestExistence(Expression<Func<Developer, string>> expression, string value)
+        {
+            IMongoQuery query = Query<Developer>.EQ(expression, value.ToLower());
+            Developer result = context.TestDeveloper.FindOne(query);
+            if (result == null)
+            {
+                return false;
+            }
+            return true;
+        }
     }
 }
