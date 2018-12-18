@@ -1,13 +1,13 @@
-﻿using DevContact.Helpers;
+﻿using System;
+using System.Linq;
+using Microsoft.AspNetCore.Mvc;
+using DevContact.Helpers;
 using DevContact.Models;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
 using MongoDB.Driver;
 using MongoDB.Driver.Builders;
-using System;
 using System.IdentityModel.Tokens.Jwt;
-using System.Linq;
 using System.Security.Claims;
 using System.Text;
 
@@ -16,11 +16,11 @@ namespace DevContact.Controllers
     [Authorize]
     [Produces("application/json")]
     [ApiController]
-    public class UserController : ControllerBase
+    public class TestUserController : ControllerBase
     {
-        private static readonly DataContext context = new DataContext();
+        private static readonly TestDataContext context = new TestDataContext();
 
-       
+        //}
         /// <summary>
         /// Authenticate a user to derive token. 
         /// </summary>
@@ -28,7 +28,7 @@ namespace DevContact.Controllers
         /// <returns></returns>
         [AllowAnonymous]
         [HttpPost]
-        [Route("user/authenticate")]
+        [Route("test/user/authenticate")]
         public ActionResult<AuthenticateResponse> Authenticate([FromBody]User data)
         {
             try
@@ -47,7 +47,7 @@ namespace DevContact.Controllers
                 }
 
                 //check if user is in the database
-                bool IsUserExist = UserService.CheckUserExistence(u => u.Email, data.Email);
+                bool IsUserExist = UserService.CheckTestUserExistence(u => u.Email, data.Email);
                 if (!IsUserExist)
                 {
                     return NotFound(new { message = Constants.Non_Exist });
@@ -55,7 +55,7 @@ namespace DevContact.Controllers
                 }
 
                 //verify Password match
-                User user = UserService.FetchOneUser(h => h.Email, data.Email);
+                User user = UserService.FetchOneTestUser(h => h.Email, data.Email);
 
                 if (!data.Password.Equals(user.Password))
                 {
@@ -91,15 +91,10 @@ namespace DevContact.Controllers
             }
         }
 
-        /// <summary>
-        /// Add User to the Database
-        /// </summary>
-        /// <param name="data"></param>
-        /// <returns></returns>
         [AllowAnonymous]
         [HttpPost]
-        [Route("user/add")]
-        public ActionResult<AuthenticateResponse> AddUser([FromBody]User data)
+        [Route("test/user/add")]
+        public ActionResult<AuthenticateResponse> TestAddUser([FromBody]User data)
         {
             try
             {
@@ -131,7 +126,7 @@ namespace DevContact.Controllers
                 }
 
                 //Check for existence of unique identifiers (email)
-                if (UserService.CheckUserExistence(e => e.Email, data.Email))
+                if (UserService.CheckTestUserExistence(e => e.Email, data.Email))
                 {
                     return BadRequest(new { message = Constants.Email_Exists });
                 }
@@ -144,7 +139,7 @@ namespace DevContact.Controllers
                 response.Message = Constants.Success;
 
                 //return the newly inserted data from the database.
-                response.Data = UserService.FetchOneUser(d => d.Email, data.Email);
+                response.Data = UserService.FetchOneTestUser(d => d.Email, data.Email);
                 return Ok(response);
 
 
@@ -156,13 +151,14 @@ namespace DevContact.Controllers
             }
         }
 
+      
         /// <summary>
-        /// Fetch all users from the Database.
+        /// Test method for Get All Users
         /// </summary>
         /// <returns></returns>
         [HttpGet]
-        [Route("user/fetch")]
-        public ActionResult<UserResponses> GetAll()
+        [Route("test/user/fetch")]
+        public ActionResult<UserResponses> TestGetAll()
         {
             try
             {
@@ -186,26 +182,25 @@ namespace DevContact.Controllers
             }
         }
 
-    
         /// <summary>
         /// Fetch a User by Email.
         /// </summary>
         /// <param name="email"></param>
         /// <returns></returns>
         [HttpGet]
-        [Route("user/fetch/email/{email}")]
+        [Route("test/user/fetch/email/{email}")]
         public ActionResult<UserResponse> GetByEmail(string email)
         {
             try
             {
                 UserResponse response = new UserResponse();
                 //check if user exists
-                if (!UserService.CheckUserExistence(e => e.Email, email.ToLower()))
+                if (!UserService.CheckTestUserExistence(e => e.Email, email.ToLower()))
                 {
                     return NotFound(new { Message = Constants.Non_Exist });
                 }
 
-                response.Data = UserService.FetchOneUser(d => d.Email, email.ToLower());
+                response.Data = UserService.FetchOneTestUser(d => d.Email, email.ToLower());
                 response.Status = true;
                 return Ok(response);
 
@@ -223,19 +218,19 @@ namespace DevContact.Controllers
         /// <param name="guid"></param>
         /// <returns></returns>
         [HttpGet]
-        [Route("user/fetch/guid/{guid}")]
+        [Route("test/user/fetch/guid/{guid}")]
         public ActionResult<UserResponse> GetByGuid(string guid)
         {
             try
             {
                 UserResponse response = new UserResponse();
                 //check if user exists
-                if (!UserService.CheckUserExistence(e => e.Email, guid.ToLower()))
+                if (!UserService.CheckTestUserExistence(e => e.Guid, guid.ToLower()))
                 {
                     return NotFound(new { Message = Constants.Non_Exist });
                 }
 
-                response.Data = UserService.FetchOneUser(d => d.Guid, guid.ToLower());
+                response.Data = UserService.FetchOneTestUser(d => d.Guid, guid.ToLower());
                 response.Status = true;
                 return Ok(response);
 
@@ -253,7 +248,7 @@ namespace DevContact.Controllers
         /// <param name="guid"></param>
         /// <returns></returns>
         [HttpDelete]
-        [Route("user/delete/{guid}")]
+        [Route("test/user/delete/{guid}")]
         public ActionResult<GeneralResponse> Delete(string guid)
         {
             try
@@ -262,7 +257,7 @@ namespace DevContact.Controllers
                 GeneralResponse response = new GeneralResponse();
 
                 //check if user exists
-                if (!UserService.CheckUserExistence(e => e.Guid, guid))
+                if (!UserService.CheckTestUserExistence(e => e.Guid, guid))
                 {
                     return NotFound(new { Message = Constants.Non_Exist });
                 }
